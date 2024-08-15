@@ -12,7 +12,7 @@ function generateSoustraction(
   rightMax: number
 ): { operation: string; result: number } {
   const num1 = getRandomInt(1, leftMax);
-  const num2 = getRandomInt(1, Math.min(num1, rightMax)); // Assure que num2 <= num1 pour éviter les résultats négatifs
+  const num2 = getRandomInt(1, Math.min(num1, rightMax));
   return { operation: `${num1} - ${num2}`, result: num1 - num2 };
 }
 
@@ -30,13 +30,15 @@ const Soustraction: React.FC = () => {
   const [currentCalculation, setCurrentCalculation] = useState<string>("");
   const [completed, setCompleted] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
+  const [timeLeft, setTimeLeft] = useState<number>(Number(delay));
 
   useEffect(() => {
     if (count && delay && leftDigits && rightDigits) {
       const numCalculations = parseInt(count, 10);
-      const delayMs = parseInt(delay, 10) * 1000; // Conversion en millisecondes
-      const leftMax = Math.pow(10, parseInt(leftDigits, 10)) - 1; // Calculer le nombre max à gauche
-      const rightMax = Math.pow(10, parseInt(rightDigits, 10)) - 1; // Calculer le nombre max à droite
+      const delayMs = parseInt(delay, 10) * 1000;
+      const leftMax = Math.pow(10, parseInt(leftDigits, 10)) - 1;
+      const rightMax = Math.pow(10, parseInt(rightDigits, 10)) - 1;
+
       let index = 0;
 
       const interval = setInterval(() => {
@@ -44,6 +46,8 @@ const Soustraction: React.FC = () => {
           const newCalculation = generateSoustraction(leftMax, rightMax);
           setCalculations((prev) => [...prev, newCalculation]);
           setCurrentCalculation(newCalculation.operation + " = ?");
+          setTimeLeft(parseInt(delay, 10));
+
           index++;
         } else {
           setCompleted(true);
@@ -51,7 +55,14 @@ const Soustraction: React.FC = () => {
         }
       }, delayMs);
 
-      return () => clearInterval(interval);
+      const countdownInterval = setInterval(() => {
+        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+      }, 1000);
+
+      return () => {
+        clearInterval(interval);
+        clearInterval(countdownInterval);
+      };
     }
   }, [count, delay, leftDigits, rightDigits]);
 
@@ -79,7 +90,10 @@ const Soustraction: React.FC = () => {
       ) : (
         <div>
           <h2>{currentCalculation}</h2>
-          <p>Le prochain calcul s'affichera dans {delay} secondes...</p>
+          <p>
+            Le prochain calcul s'affichera dans {timeLeft}{" "}
+            {timeLeft > 1 ? "secondes" : "seconde"}...
+          </p>
         </div>
       )}
     </div>

@@ -4,11 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const Home: React.FC = () => {
-  const [calculsCount, setCalculsCount] = useState<number>(5); // Par défaut 5 calculs
-  const [delay, setDelay] = useState<number>(30); // Par défaut 30 secondes
-  const [operation, setOperation] = useState<string>("addition"); // Par défaut addition
-  const [leftDigits, setLeftDigits] = useState<number>(2); // Par défaut 2 chiffres max à gauche
-  const [rightDigits, setRightDigits] = useState<number>(2); // Par défaut 2 chiffres max à droite
+  const [calculsCount, setCalculsCount] = useState<number>(5);
+  const [delay, setDelay] = useState<number>(30);
+  const [operation, setOperation] = useState<string>("addition");
+  const [leftDigits, setLeftDigits] = useState<number>(2);
+  const [rightDigits, setRightDigits] = useState<number>(2);
   const router = useRouter();
 
   const startSession = () => {
@@ -20,6 +20,9 @@ const Home: React.FC = () => {
         break;
       case "soustraction":
         path = `/soustraction?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
+        break;
+      case "addition-soustraction":
+        path = `/addition-soustraction?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
         break;
       case "multiplication":
         path = `/multiplication?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
@@ -89,6 +92,7 @@ const Home: React.FC = () => {
         >
           <option value="addition">Addition</option>
           <option value="soustraction">Soustraction</option>
+          <option value="addition-soustraction">Addition / Soustraction</option>
           <option value="multiplication">Multiplication</option>
           <option value="division">Division</option>
         </select>

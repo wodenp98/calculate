@@ -7,16 +7,22 @@ function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function generateMultiplication(
+function generateOperation(
   leftMax: number,
   rightMax: number
 ): { operation: string; result: number } {
   const num1 = getRandomInt(1, leftMax);
   const num2 = getRandomInt(1, rightMax);
-  return { operation: `${num1} * ${num2}`, result: num1 * num2 };
+  const isAddition = Math.random() > 0.5;
+
+  if (isAddition) {
+    return { operation: `${num1} + ${num2}`, result: num1 + num2 };
+  } else {
+    return { operation: `${num1} - ${num2}`, result: num1 - num2 };
+  }
 }
 
-const Multiplication: React.FC = () => {
+const Addition: React.FC = () => {
   const searchParams = useSearchParams();
 
   const count = searchParams.get("count");
@@ -42,7 +48,7 @@ const Multiplication: React.FC = () => {
 
       const interval = setInterval(() => {
         if (index < numCalculations) {
-          const newCalculation = generateMultiplication(leftMax, rightMax);
+          const newCalculation = generateOperation(leftMax, rightMax);
           setCalculations((prev) => [...prev, newCalculation]);
           setCurrentCalculation(newCalculation.operation + " = ?");
           setTimeLeft(parseInt(delay, 10));
@@ -74,7 +80,7 @@ const Multiplication: React.FC = () => {
       {!completed ? <h1>Calculs en cours</h1> : ""}
       {completed ? (
         <div>
-          <h2>Calculs terminés</h2>
+          <h2>Opérations terminées</h2>
           <ul>
             {calculations.map((calc, index) => (
               <li key={index}>
@@ -90,7 +96,7 @@ const Multiplication: React.FC = () => {
         <div>
           <h2>{currentCalculation}</h2>
           <p>
-            Le prochain calcul s'affichera dans {timeLeft}{" "}
+            La prochaine opération s'affichera dans {timeLeft}{" "}
             {timeLeft > 1 ? "secondes" : "seconde"}...
           </p>
         </div>
@@ -99,4 +105,4 @@ const Multiplication: React.FC = () => {
   );
 };
 
-export default Multiplication;
+export default Addition;
