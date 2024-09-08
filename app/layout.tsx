@@ -24,7 +24,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-inter antialiased h-full`}>
         <div className="flex flex-col h-full">
           <Header />
-          <div className="flex-1 m-auto py-12 w-full">{children}</div>
+          <div className="flex-1 m-auto w-full">{children}</div>
         </div>
       </body>
     </html>

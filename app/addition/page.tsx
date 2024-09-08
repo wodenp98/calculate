@@ -2,6 +2,15 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { Button } from "@/components/ui/button.tsx";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card.tsx";
+import { Pause, Play } from "lucide-react";
 
 function getRandomInt(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -31,6 +40,7 @@ const Addition: React.FC = () => {
   const [completed, setCompleted] = useState<boolean>(false);
   const [showResults, setShowResults] = useState<boolean>(false);
   const [timeLeft, setTimeLeft] = useState<number>(Number(delay));
+  const [isPaused, setIsPaused] = useState<boolean>(false);
 
   useEffect(() => {
     if (count && delay && leftDigits && rightDigits) {
@@ -41,21 +51,22 @@ const Addition: React.FC = () => {
       let index = 0;
 
       const interval = setInterval(() => {
-        if (index < numCalculations) {
+        if (!isPaused && index < numCalculations) {
           const newCalculation = generateAddition(leftMax, rightMax);
           setCalculations((prev) => [...prev, newCalculation]);
           setCurrentCalculation(newCalculation.operation + " = ?");
           setTimeLeft(parseInt(delay, 10));
-
           index++;
-        } else {
+        } else if (index >= numCalculations) {
           setCompleted(true);
           clearInterval(interval);
         }
       }, delayMs);
 
       const countdownInterval = setInterval(() => {
-        setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        if (!isPaused) {
+          setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+        }
       }, 1000);
 
       return () => {
@@ -63,18 +74,20 @@ const Addition: React.FC = () => {
         clearInterval(countdownInterval);
       };
     }
-  }, [count, delay, leftDigits, rightDigits]);
+  }, [count, delay, leftDigits, rightDigits, isPaused]);
 
   const handleShowResults = () => {
     setShowResults(true);
   };
 
+  const togglePause = () => {
+    setIsPaused((prev) => !prev);
+  };
+
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      {!completed ? <h1>Calculs en cours</h1> : ""}
+    <div className="flex items-center justify-center w-full">
       {completed ? (
         <div>
-          <h2>Addition terminés</h2>
           <ul>
             {calculations.map((calc, index) => (
               <li key={index}>
@@ -83,17 +96,26 @@ const Addition: React.FC = () => {
             ))}
           </ul>
           {!showResults && (
-            <button onClick={handleShowResults}>Afficher les résultats</button>
+            <Button onClick={handleShowResults}>Afficher les résultats</Button>
           )}
         </div>
       ) : (
-        <div>
-          <h2>{currentCalculation}</h2>
-          <p>
-            Le prochain calcul s'affichera dans {timeLeft}{" "}
-            {timeLeft > 1 ? "secondes" : "seconde"}...
-          </p>
-        </div>
+        <Card className="w-3/4">
+          <CardHeader>
+            <CardTitle className="flex justify-between items-center">
+              <h3>Addition</h3>
+              <div className="flex items-center space-x-4">
+                <Button variant="ghost" onClick={togglePause}>
+                  {isPaused ? <Play /> : <Pause />}
+                </Button>
+                <span className="text-3xl">{timeLeft}</span>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-9xl flex items-center justify-center h-80">
+            {currentCalculation}
+          </CardContent>
+        </Card>
       )}
     </div>
   );
