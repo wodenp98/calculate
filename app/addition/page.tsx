@@ -76,6 +76,8 @@ const Addition: React.FC = () => {
     }
   }, [count, delay, leftDigits, rightDigits, isPaused]);
 
+  console.log(!currentCalculation);
+
   const handleShowResults = () => {
     setShowResults(true);
   };
@@ -87,33 +89,44 @@ const Addition: React.FC = () => {
   return (
     <div className="flex items-center justify-center w-full">
       {completed ? (
-        <div>
-          <ul>
-            {calculations.map((calc, index) => (
-              <li key={index}>
-                {calc.operation} {showResults && `= ${calc.result}`}
-              </li>
-            ))}
-          </ul>
-          {!showResults && (
-            <Button onClick={handleShowResults}>Afficher les résultats</Button>
-          )}
-        </div>
+        <Card className="w-1/2 mb-10">
+          <CardHeader>
+            <CardTitle>
+              <div className="text-2xl">Résultats</div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="text-6xl flex items-center justify-center">
+            <ul>
+              {calculations.map((calc, index) => (
+                <li key={index} className="flex justify-between">
+                  {calc.operation} {showResults && `= ${calc.result}`}
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+          <CardFooter className="flex justify-center">
+            {!showResults && (
+              <Button onClick={handleShowResults} variant="outline">
+                Afficher les résultats
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       ) : (
         <Card className="w-3/4">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <h3>Addition</h3>
-              <div className="flex items-center space-x-4">
+              <div className="text-2xl">Addition</div>
+              <div className="flex items-center justify-between space-x-4 w-28">
                 <Button variant="ghost" onClick={togglePause}>
-                  {isPaused ? <Play /> : <Pause />}
+                  {isPaused ? <Play size={20} /> : <Pause size={20} />}
                 </Button>
                 <span className="text-3xl">{timeLeft}</span>
               </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="text-9xl flex items-center justify-center h-80">
-            {currentCalculation}
+            {currentCalculation ? currentCalculation : "Concentrez-vous"}
           </CardContent>
         </Card>
       )}
