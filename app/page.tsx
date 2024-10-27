@@ -91,7 +91,8 @@ const Home: React.FC = () => {
         path = `/division?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
         break;
       default:
-        path = `/calculs?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
+        throw new Error("Erreur lors du choix de l'opération");
+        break;
     }
 
     router.push(path);
