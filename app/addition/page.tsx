@@ -25,6 +25,8 @@ function generateAddition(
   return { operation: `${num1} + ${num2}`, result: num1 + num2 };
 }
 
+// ne jamais avoir de 0 et pas de soustraction négative
+
 const Addition: React.FC = () => {
   const searchParams = useSearchParams();
 
@@ -75,8 +77,6 @@ const Addition: React.FC = () => {
       };
     }
   }, [count, delay, leftDigits, rightDigits, isPaused]);
-
-  console.log(!currentCalculation);
 
   const handleShowResults = () => {
     setShowResults(true);

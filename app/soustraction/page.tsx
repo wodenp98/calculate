@@ -76,8 +76,6 @@ const Soustraction: React.FC = () => {
     }
   }, [count, delay, leftDigits, rightDigits, isPaused]);
 
-  console.log(!currentCalculation);
-
   const handleShowResults = () => {
     setShowResults(true);
   };
@@ -116,7 +114,7 @@ const Soustraction: React.FC = () => {
         <Card className="w-3/4">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <div className="text-2xl">Addition</div>
+              <div className="text-2xl">Soustraction</div>
               <div className="flex items-center justify-between space-x-4 w-28">
                 <Button variant="ghost" onClick={togglePause}>
                   {isPaused ? <Play size={20} /> : <Pause size={20} />}
