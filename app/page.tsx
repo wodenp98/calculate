@@ -1,5 +1,5 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
+/* eslint-disable react/no-unescaped-entities */
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -23,7 +22,6 @@ import {
   CardContent,
   CardFooter,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectTrigger,
@@ -31,39 +29,23 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { ClipboardCheck, Clipboard } from "lucide-react";
 
 const FormSchema = z.object({
   calculsLength: z.string({
     required_error: "Nombre de calculs requis",
-    invalid_type_error: "Nombre de calculs doit être un nombre",
   }),
   delai: z.string({
     required_error: "Délai requis",
-    invalid_type_error: "Délai doit être un nombre",
   }),
-  maxLeft: z.string({
-    required_error: "Chiffres max à gauche requis",
-    invalid_type_error: "Chiffres max à gauche doit être un nombre",
-  }),
-  maxRight: z.string({
-    required_error: "Chiffres max à droite requis",
-    invalid_type_error: "Chiffres max à gauche doit être un nombre",
+  difficulty: z.string({
+    required_error: "Niveau de difficulté requis",
   }),
   operationType: z.string({
     required_error: "Type d'opération requis",
-    invalid_type_error: "Type d'opération doit être une string",
   }),
 });
 
 const Home: React.FC = () => {
-  const [calculsCount, setCalculsCount] = useState<number>(5);
-  const [delay, setDelay] = useState<number>(30);
-  const [operation, setOperation] = useState<string>("addition");
-  const [leftDigits, setLeftDigits] = useState<number>(2);
-  const [rightDigits, setRightDigits] = useState<number>(2);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -72,205 +54,143 @@ const Home: React.FC = () => {
   });
 
   function onSubmit(data: z.infer<typeof FormSchema>) {
-    let path = "";
-
-    switch (data.operationType) {
-      case "addition":
-        path = `/addition?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
-        break;
-      case "soustraction":
-        path = `/soustraction?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
-        break;
-      case "addition-soustraction":
-        path = `/addition-soustraction?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
-        break;
-      case "multiplication":
-        path = `/multiplication?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
-        break;
-      case "division":
-        path = `/division?count=${data.calculsLength}&delay=${data.delai}&leftDigits=${data.maxLeft}&rightDigits=${data.maxRight}`;
-        break;
-      default:
-        throw new Error("Erreur lors du choix de l'opération");
-        break;
-    }
-
-    router.push(path);
+    router.push(
+      `/calculs?count=${data.calculsLength}&delay=${data.delai}&difficulty=${data.difficulty}&operation=${data.operationType}`
+    );
   }
 
   return (
     <div className="flex items-center justify-center">
-      <Card className="w-80">
+      <Card className="w-96">
         <CardHeader>
-          <CardTitle>Générateur de Calculs</CardTitle>
+          <CardTitle>Calcul Mental - CM1</CardTitle>
+          <CardDescription>
+            Configurez votre séance de calcul mental
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div>
-                <div className="w-full space-y-4">
-                  <FormField
-                    control={form.control}
-                    name="calculsLength"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Nombre de calculs:</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisissez un nombre" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[...Array(20)].map((_, i) => (
-                              <SelectItem
-                                key={i + 1}
-                                value={(i + 1).toString()}
-                              >
-                                {i + 1}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* delai */}
-                  <FormField
-                    control={form.control}
-                    name="delai"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Délai (secondes):</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisissez un délai" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[...Array(12)].map((_, i) => (
-                              <SelectItem
-                                key={(i + 1) * 5}
-                                value={((i + 1) * 5).toString()}
-                              >
-                                {(i + 1) * 5}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+              <FormField
+                control={form.control}
+                name="operationType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type d'exercice :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisissez un type d'exercice" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="addition">Additions</SelectItem>
+                        <SelectItem value="soustraction">
+                          Soustractions
+                        </SelectItem>
+                        <SelectItem value="multiplication">
+                          Tables de multiplication
+                        </SelectItem>
+                        <SelectItem value="division">
+                          Divisions simples
+                        </SelectItem>
+                        <SelectItem value="mixed">
+                          Opérations mélangées
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
 
-                  {/* max L */}
-                  <FormField
-                    control={form.control}
-                    name="maxLeft"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Chiffres max à gauche:</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="ex: 1: 0 à 9, 2: 0 à 99" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[...Array(5)].map((_, i) => (
-                              <SelectItem
-                                key={i + 1}
-                                value={(i + 1).toString()}
-                              >
-                                {i + 1}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* max R */}
-                  <FormField
-                    control={form.control}
-                    name="maxRight"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Chiffres max à droite:</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="ex: 1: 0 à 9, 2: 0 à 99" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {[...Array(5)].map((_, i) => (
-                              <SelectItem
-                                key={i + 1}
-                                value={(i + 1).toString()}
-                              >
-                                {i + 1}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  {/* Type d'opé */}
-                  <FormField
-                    control={form.control}
-                    name="operationType"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Type d'opération:</FormLabel>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Choisissez un type d'opération" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            <SelectItem value="addition">Addition</SelectItem>
-                            <SelectItem value="soustraction">
-                              Soustraction
-                            </SelectItem>
-                            <SelectItem value="addition-soustraction">
-                              Addition / Soustraction
-                            </SelectItem>
-                            <SelectItem value="multiplication">
-                              Multiplication
-                            </SelectItem>
-                            <SelectItem value="division">Division</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
-              </div>
-              <Button type="submit" variant="outline">
-                Démarrer la session
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Niveau de difficulté :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisissez un niveau" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="facile">
+                          Facile (petits nombres)
+                        </SelectItem>
+                        <SelectItem value="moyen">
+                          Moyen (nombres à 2-3 chiffres)
+                        </SelectItem>
+                        <SelectItem value="difficile">
+                          Difficile (grands nombres)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="calculsLength"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de calculs :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Combien de calculs ?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="5">5 calculs</SelectItem>
+                        <SelectItem value="10">10 calculs</SelectItem>
+                        <SelectItem value="15">15 calculs</SelectItem>
+                        <SelectItem value="20">20 calculs</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="delai"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temps par calcul :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Temps par calcul" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="5">5 secondes</SelectItem>
+                        <SelectItem value="10">10 secondes</SelectItem>
+                        <SelectItem value="15">15 secondes</SelectItem>
+                        <SelectItem value="20">20 secondes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">
+                Démarrer la séance
               </Button>
             </form>
           </Form>
