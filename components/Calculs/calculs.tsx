@@ -109,7 +109,7 @@ const Calculs: React.FC = () => {
   return (
     <div className="flex items-center justify-center w-full">
       {completed ? (
-        <Card className="w-1/2 mb-10">
+        <Card className="w-3/4 mb-10">
           <CardHeader>
             <CardTitle>
               <div className="text-2xl">Résultats - {getOperationTitle()}</div>
