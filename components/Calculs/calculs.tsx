@@ -139,7 +139,9 @@ const Calculs: React.FC = () => {
         <Card className="w-3/4">
           <CardHeader>
             <CardTitle className="flex justify-between items-center">
-              <div className="text-2xl">{getOperationTitle()} - CM1</div>
+              <div className="text-xl md:text-2xl">
+                {getOperationTitle()} - CM1
+              </div>
               <div className="flex items-center justify-between space-x-4 w-28">
                 <Button variant="ghost" onClick={togglePause}>
                   {isPaused ? <Play size={20} /> : <Pause size={20} />}
@@ -148,7 +150,7 @@ const Calculs: React.FC = () => {
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent className="text-9xl flex items-center justify-center h-80">
+          <CardContent className="text-5xl md:text-9xl flex items-center justify-center h-80">
             {currentCalculation ? currentCalculation : "Prêt ?"}
           </CardContent>
         </Card>
