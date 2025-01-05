@@ -1,105 +1,201 @@
-/* eslint-disable react/no-unescaped-entities */
 "use client";
-import { useState } from "react";
+/* eslint-disable react/no-unescaped-entities */
 import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
+
+import { Button } from "@/components/ui/button";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+
+const FormSchema = z.object({
+  calculsLength: z.string({
+    required_error: "Nombre de calculs requis",
+  }),
+  delai: z.string({
+    required_error: "Délai requis",
+  }),
+  difficulty: z.string({
+    required_error: "Niveau de difficulté requis",
+  }),
+  operationType: z.string({
+    required_error: "Type d'opération requis",
+  }),
+});
 
 const Home: React.FC = () => {
-  const [calculsCount, setCalculsCount] = useState<number>(5);
-  const [delay, setDelay] = useState<number>(30);
-  const [operation, setOperation] = useState<string>("addition");
-  const [leftDigits, setLeftDigits] = useState<number>(2);
-  const [rightDigits, setRightDigits] = useState<number>(2);
   const router = useRouter();
 
-  const startSession = () => {
-    let path = "";
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    mode: "onChange",
+  });
 
-    switch (operation) {
-      case "addition":
-        path = `/addition?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-        break;
-      case "soustraction":
-        path = `/soustraction?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-        break;
-      case "addition-soustraction":
-        path = `/addition-soustraction?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-        break;
-      case "multiplication":
-        path = `/multiplication?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-        break;
-      case "division":
-        path = `/division?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-        break;
-      default:
-        path = `/calculs?count=${calculsCount}&delay=${delay}&leftDigits=${leftDigits}&rightDigits=${rightDigits}`;
-    }
-
-    router.push(path);
-  };
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    router.push(
+      `/calculs?count=${data.calculsLength}&delay=${data.delai}&difficulty=${data.difficulty}&operation=${data.operationType}`
+    );
+  }
 
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Générateur de Calculs</h1>
-      <label>
-        Nombre de calculs:
-        <input
-          type="number"
-          value={calculsCount}
-          min="1"
-          max="100"
-          onChange={(e) => setCalculsCount(parseInt(e.target.value, 10))}
-        />
-      </label>
-      <br />
-      <label>
-        Délai entre les calculs (secondes):
-        <input
-          type="number"
-          value={delay}
-          min="1"
-          max="60"
-          onChange={(e) => setDelay(parseInt(e.target.value, 10))}
-        />
-      </label>
-      <br />
-      <label>
-        Chiffres max à gauche:
-        <input
-          type="number"
-          value={leftDigits}
-          min="1"
-          max="10"
-          onChange={(e) => setLeftDigits(parseInt(e.target.value, 10))}
-        />
-      </label>
-      <br />
-      <label>
-        Chiffres max à droite:
-        <input
-          type="number"
-          value={rightDigits}
-          min="1"
-          max="10"
-          onChange={(e) => setRightDigits(parseInt(e.target.value, 10))}
-        />
-      </label>
-      <br />
-      <label>
-        Type d'opération:
-        <select
-          value={operation}
-          onChange={(e) => setOperation(e.target.value)}
-        >
-          <option value="addition">Addition</option>
-          <option value="soustraction">Soustraction</option>
-          <option value="addition-soustraction">Addition / Soustraction</option>
-          <option value="multiplication">Multiplication</option>
-          <option value="division">Division</option>
-        </select>
-      </label>
-      <br />
-      <br />
-      <button onClick={startSession}>Démarrer la session</button>
+    <div className="flex items-center justify-center">
+      <Card className="w-96">
+        <CardHeader>
+          <CardTitle>Calcul Mental - CM1</CardTitle>
+          <CardDescription>
+            Configurez votre séance de calcul mental
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="operationType"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type d'exercice :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisissez un type d'exercice" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="addition">Additions</SelectItem>
+                        <SelectItem value="soustraction">
+                          Soustractions
+                        </SelectItem>
+                        <SelectItem value="multiplication">
+                          Tables de multiplication
+                        </SelectItem>
+                        <SelectItem value="division">
+                          Divisions simples
+                        </SelectItem>
+                        <SelectItem value="mixed">
+                          Opérations mélangées
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="difficulty"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Niveau de difficulté :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Choisissez un niveau" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="facile">
+                          Facile (petits nombres)
+                        </SelectItem>
+                        <SelectItem value="moyen">
+                          Moyen (nombres à 2-3 chiffres)
+                        </SelectItem>
+                        <SelectItem value="difficile">
+                          Difficile (grands nombres)
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="calculsLength"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre de calculs :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Combien de calculs ?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="5">5 calculs</SelectItem>
+                        <SelectItem value="10">10 calculs</SelectItem>
+                        <SelectItem value="15">15 calculs</SelectItem>
+                        <SelectItem value="20">20 calculs</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="delai"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Temps par calcul :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Temps par calcul" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="5">5 secondes</SelectItem>
+                        <SelectItem value="10">10 secondes</SelectItem>
+                        <SelectItem value="15">15 secondes</SelectItem>
+                        <SelectItem value="20">20 secondes</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </FormItem>
+                )}
+              />
+
+              <Button type="submit" className="w-full">
+                Démarrer la séance
+              </Button>
+            </form>
+          </Form>
+        </CardContent>
+      </Card>
     </div>
   );
 };
